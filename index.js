@@ -1,20 +1,24 @@
-// importa la libreria express
-const express = require('express');
+// ahora tambien importamos mongoose
+const express  = require('express');
+const mongoose = require('mongoose');
 
-// ponemos el puerto del server en una variable
-const port = process.env.PORT || 3000;
+// puerto y base de datos
+const port = process.env.PORT        || 3000;
+const db   = process.env.MONGODB_URI || 'mongodb://localhost/hellodb';
 
-// crea el objeto app
 const app = express();
 
-// agregamos esta línea
-app.use(express.static('public'));
+// conexion a la base de datos
+mongoose.set('useUnifiedTopology', true);
+mongoose.set('useFindAndModify', false);
+mongoose
+  .connect(db, { useNewUrlParser: true })
+  .then(() => {
+    console.log(`DB connected @ ${db}`);
+  })
+  .catch(err => console.error(`Connection error ${err}`));
 
-// la app responde con Hello world
-// a todas las peticiones GET a /
-app.get('/', (req, res) => {
-  res.send('Hello world');
+// el server escucha todo
+app.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
 });
-
-// el server escucha en el puerto 3000
-app.listen(port);
